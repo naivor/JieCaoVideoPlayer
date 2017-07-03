@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,7 +58,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
     @Override
     public void init(Context context) {
         super.init(context);
-        bottomProgressBar = (ProgressBar) findViewById(R.id.bottom_progressbar);
+        bottomProgressBar = (ProgressBar) findViewById(R.id.bottom_progress);
         titleTextView = (TextView) findViewById(R.id.title);
         backButton = (ImageView) findViewById(R.id.back);
 //        thumbImageView = (SimpleDraweeView) findViewById(R.id.thumb);
@@ -149,7 +150,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
                     }
                     break;
             }
-        } else if (id == R.id.progress) {
+        } else if (id == R.id.bottom_seek_progress) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     cancelDismissControlViewTimer();
@@ -181,7 +182,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
                 onClickUiToggle();
             }
         } else if (i == R.id.surface_container) {
-            if (JC_USER_EVENT_STANDARD != null && isCurrentMediaListenerOnFirstFloor()) {
+            if (JC_USER_EVENT_STANDARD != null && isCurrentJcvd()) {
 //                if (mIfCurrentIsFullscreen) {
 //                    JC_USER_EVENT_STANDARD.onClickBlankFullscreen(url, objects);
 //                } else {
@@ -232,7 +233,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
 
     private void startPlayLogic() {
         onEvent(JCUserActionStandard.ON_CLICK_START_THUMB);
-        prepareVideo();
+        prepareMediaPlayer();
         startDismissControlViewTimer();
     }
 
@@ -270,12 +271,12 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
         }
     }
 
-    @Override
-    public void setProgressAndTime(int progress, int secProgress, int currentTime, int totalTime) {
-        super.setProgressAndTime(progress, secProgress, currentTime, totalTime);
-        if (progress != 0) bottomProgressBar.setProgress(progress);
-        if (secProgress != 0) bottomProgressBar.setSecondaryProgress(secProgress);
-    }
+//    @Override
+//    public void setProgressAndTime(int progress, int secProgress, int currentTime, int totalTime) {
+//        super.setProgressAndTime(progress, secProgress, currentTime, totalTime);
+//        if (progress != 0) bottomProgressBar.setProgress(progress);
+//        if (secProgress != 0) bottomProgressBar.setSecondaryProgress(secProgress);
+//    }
 
     @Override
     public void resetProgressAndTime() {
@@ -520,7 +521,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
     public void showProgressDialog(float deltaX, String seekTime, int seekTimePosition, String totalTime, int totalTimeDuration) {
         super.showProgressDialog(deltaX, seekTime, seekTimePosition, totalTime, totalTimeDuration);
         if (mProgressDialog == null) {
-            View localView = LayoutInflater.from(getContext()).inflate(R.layout.jc_progress_dialog, null);
+            View localView = LayoutInflater.from(getContext()).inflate(R.layout.jc_dialog_progress, null);
             mDialogProgressBar = ((ProgressBar) localView.findViewById(R.id.duration_progressbar));
             mDialogSeekTime = ((TextView) localView.findViewById(R.id.tv_current));
             mDialogTotalTime = ((TextView) localView.findViewById(R.id.tv_duration));
@@ -532,8 +533,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
             mProgressDialog.getWindow().addFlags(16);
             mProgressDialog.getWindow().setLayout(-2, -2);
             WindowManager.LayoutParams localLayoutParams = mProgressDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 49;
-            localLayoutParams.y = getResources().getDimensionPixelOffset(R.dimen.jc_progress_dialog_margin_top);
+            localLayoutParams.gravity = Gravity.CENTER;
             mProgressDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mProgressDialog.isShowing()) {
@@ -567,7 +567,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
     public void showVolumeDialog(float deltaY, int volumePercent) {
         super.showVolumeDialog(deltaY, volumePercent);
         if (mVolumeDialog == null) {
-            View localView = LayoutInflater.from(getContext()).inflate(R.layout.jc_volume_dialog, null);
+            View localView = LayoutInflater.from(getContext()).inflate(R.layout.jc_dialog_volume, null);
             mDialogVolumeProgressBar = ((ProgressBar) localView.findViewById(R.id.volume_progressbar));
             mVolumeDialog = new Dialog(getContext(), R.style.jc_style_dialog_progress);
             mVolumeDialog.setContentView(localView);
@@ -576,8 +576,7 @@ public class JCVideoPlayerStandardFresco extends JCVideoPlayer {
             mVolumeDialog.getWindow().addFlags(16);
             mVolumeDialog.getWindow().setLayout(-2, -2);
             WindowManager.LayoutParams localLayoutParams = mVolumeDialog.getWindow().getAttributes();
-            localLayoutParams.gravity = 19;
-            localLayoutParams.x = getContext().getResources().getDimensionPixelOffset(R.dimen.jc_volume_dialog_margin_left);
+            localLayoutParams.gravity = Gravity.CENTER;
             mVolumeDialog.getWindow().setAttributes(localLayoutParams);
         }
         if (!mVolumeDialog.isShowing()) {
